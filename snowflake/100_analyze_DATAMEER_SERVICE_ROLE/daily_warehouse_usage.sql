@@ -32,7 +32,7 @@ combined_usage as (
 
 daily_usage as (
     select
-      sum(credits_used)                   as credits_used,
+      to_number(sum(credits_used), 20, 1) as credits_used,
       date_trunc('day', start_time)::date as calculated_on
     from
       combined_usage

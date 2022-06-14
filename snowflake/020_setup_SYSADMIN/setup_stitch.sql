@@ -1,0 +1,29 @@
+// Create top level objects
+CREATE DATABASE IF NOT EXISTS
+  STITCH_DB
+  COMMENT='Database for Stitch ingestion';
+
+CREATE SCHEMA IF NOT EXISTS
+  STITCH_DB.STAGE_1
+  COMMENT='Schema of first stage data - materialized from Snowflake account usage and unloaded to S3';
+
+CREATE SCHEMA IF NOT EXISTS
+  STITCH_DB.STAGE_2
+  COMMENT='Schema of second stage data - loaded from S3 and materialized to Snwoflake by Stitch';
+
+CREATE WAREHOUSE IF NOT EXISTS
+    STITCH_INGESTION_WH
+    COMMENT='Warehouse for Stitch ingestion'
+    WAREHOUSE_SIZE=XSMALL
+    AUTO_SUSPEND=60
+    INITIALLY_SUSPENDED=TRUE;
+
+// Transfer ownerships
+GRANT OWNERSHIP ON DATABASE STITCH_DB                      TO ROLE STITCH_ADMIN_ROLE;
+GRANT OWNERSHIP ON SCHEMA STITCH_DB.STAGE_1                TO ROLE STITCH_ADMIN_ROLE;
+GRANT OWNERSHIP ON SCHEMA STITCH_DB.STAGE_2                TO ROLE STITCH_ADMIN_ROLE;
+GRANT OWNERSHIP ON WAREHOUSE STITCH_INGESTION_WH           TO ROLE STITCH_ADMIN_ROLE;
+
+// grant warehouse usage to admins
+GRANT USAGE ON WAREHOUSE STITCH_INGESTION_WH               TO ROLE ACCOUNTADMIN;
+GRANT USAGE ON WAREHOUSE STITCH_INGESTION_WH               TO ROLE SYSADMIN;
